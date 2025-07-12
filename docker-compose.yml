@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+      - task-service
+      - analytics-service
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      - DATABASE_URL=postgresql://user:pass@auth-db/auth
+    depends_on:
+      - auth-db
+
+  auth-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: auth
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+
+  task-service:
+    build: ./task-service
+    environment:
+      - DATABASE_URL=postgresql://user:pass@task-db/tasks
+    depends_on:
+      - task-db
+
+  task-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: tasks
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+
+  analytics-service:
+    build: ./analytics-service
+    environment:
+      - DATABASE_URL=postgresql://user:pass@analytics-db/analytics
+    depends_on:
+      - analytics-db
+
+  analytics-db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: analytics
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
