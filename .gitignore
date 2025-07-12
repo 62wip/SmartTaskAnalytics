@@ -1,14 +1,6 @@
-analytics_service/.env
-analytics_service/.venv/
-analytics_service/__pycache__/
-
-auth_service/.env
-auth_service/.venv/
-auth_service/__pycache__/
-
-task_service/.env
-task_service/.venv/
-task_service/__pycache__/
+**/.env
+**/.venv/
+**/__pycache__/
 
 *.pyc
 *.pyo
