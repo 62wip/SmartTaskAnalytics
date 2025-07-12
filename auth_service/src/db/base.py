@@ -1,4 +1,3 @@
-from src.models.user import User
-from src.db.session import engine, Base
+from sqlalchemy.orm import declarative_base
 
-Base.metadata.create_all(bind=engine)
+Base = declarative_base()

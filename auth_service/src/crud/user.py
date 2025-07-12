@@ -16,11 +16,11 @@ async def create_user(
     return user
 
 
-async def get_user_by_email(session: AsyncSession, email: str) -> User:
+async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
     result = await session.execute(select(User).filter(User.email == email))
     return result.scalars().first()
 
 
-async def get_user_by_username(session: AsyncSession, username: str) -> User:
+async def get_user_by_username(session: AsyncSession, username: str) -> User | None:
     result = await session.execute(select(User).filter(User.username == username))
     return result.scalars().first()
