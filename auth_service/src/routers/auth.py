@@ -57,7 +57,7 @@ async def login(
 @router.get(
     "/me",
     response_model=UserResponse,
-    status_code=status.HTTP_202_ACCEPTED,
+    status_code=status.HTTP_200_OK,
     summary="Ручка для получения данных текущего пользователя",
 )
 async def get_me(current_user: User = Depends(get_current_user)):
