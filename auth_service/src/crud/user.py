@@ -8,8 +8,11 @@ from src.core.security import hash_password
 async def create_user(
     session: AsyncSession, username: str, email: str, password: str
 ) -> User:
-    hashed_pw = hash_password(password)
-    user = User(username=username, email=email, hashed_password=hashed_pw)
+    user = User(
+        username=username, 
+        email=email, 
+        hashed_password=hash_password(password)
+    )
     session.add(user)
     await session.commit()
     await session.refresh(user)
@@ -24,3 +27,4 @@ async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
 async def get_user_by_username(session: AsyncSession, username: str) -> User | None:
     result = await session.execute(select(User).filter(User.username == username))
     return result.scalars().first()
+
