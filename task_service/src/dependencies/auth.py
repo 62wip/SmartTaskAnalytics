@@ -1,10 +1,10 @@
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
-from httpx import AsyncClient, ConnectError
+from httpx import AsyncClient, ConnectError, ReadError, TimeoutException
 
 from src.core.config import AUTH_SERVICE_URL
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{AUTH_SERVICE_URL}/auth/login")
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     async with AsyncClient() as client:
@@ -20,10 +20,15 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
                     detail="Invalid or expired token",
                 )
             return response.json()
-        except ConnectError:
+        except (ConnectError, ReadError, TimeoutException) as e:
             raise HTTPException(
                 status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-                detail="Service unavailable",
+                detail=f"Auth service unavailable: {str(e)}",
+            )
+        except Exception as e:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=f"Unexpected error: {str(e)}",
             )
 
 

@@ -33,6 +33,13 @@ class TaskResponse(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+    @field_validator("deadline")
+    @classmethod
+    def validate_deadline(cls, value: Optional[datetime]) -> Optional[datetime]:
+        if value is not None and value <= datetime.now(UTC):
+            raise ValueError("Deadline must be in the future.")
+        return value
+
 
 class TaskUpdate(BaseModel):
     title: Optional[str] = Field(None, min_length=1, max_length=100)
