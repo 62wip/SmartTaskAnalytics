@@ -61,4 +61,8 @@ async def login(
     summary="Ручка для получения данных текущего пользователя",
 )
 async def get_me(current_user: User = Depends(get_current_user)):
-    return current_user
+    return {
+        "id": current_user.id,
+        "email": current_user.email,
+        "username": current_user.username,
+    }
