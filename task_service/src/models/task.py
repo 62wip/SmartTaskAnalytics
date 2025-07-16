@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 
 from src.db.base import Base
 from src.models.task_tag import task_tag_table
-from models.tag import Tag
+from src.models.tag import Tag
 
 
 class Task(Base):
@@ -18,4 +18,4 @@ class Task(Base):
     deadline = Column(DateTime, nullable=True)
     is_completed = Column(Boolean, default=False)
     author_id = Column(Integer, nullable=False)
-    tags = relationship("Tag", secondary=task_tag_table, backref="tasks")
+    tags = relationship(Tag, secondary=task_tag_table, backref="tasks")
