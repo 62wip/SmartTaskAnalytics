@@ -81,7 +81,7 @@ async def delete_tag(
 
 
 @router.get(
-    "/search/", response_model=Sequence[TagResponse], summary="Поиск тегов по имени"
+    "/search", response_model=Sequence[TagResponse], summary="Поиск тегов по имени"
 )
 async def search_tags(
     name: str,
