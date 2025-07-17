@@ -41,6 +41,7 @@
 ---
 
 ## 📂 Структура проекта
+```
 SmartTaskAnalytics/
 ├── auth_service/
 │ └── src/
@@ -48,6 +49,7 @@ SmartTaskAnalytics/
 │ └── src/
 └─analytics_service/
   └── src/ (в разработке)
+```
 
 -----
 
