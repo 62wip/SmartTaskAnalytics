@@ -11,6 +11,8 @@ class TagResponse(BaseModel):
     name: str
     author_id: int
 
+    model_config = ConfigDict(from_attributes=True)
+
 
 class TagUpdate(BaseModel):
     name: Optional[str] = Field(None, max_length=100)

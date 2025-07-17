@@ -15,12 +15,12 @@ router = APIRouter()
     status_code=status.HTTP_201_CREATED,
     summary="Создать тэг",
 )
-async def create_task(
-    task_data: TagCreate,
+async def create_tag(
+    tag_data: TagCreate,
     current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
-    tag = await create_tag(session, task_data.name, current_user["id"])
+    tag = await create_tag_db(session, tag_data.name, current_user["id"])
     return tag
 
 
@@ -32,7 +32,7 @@ async def create_task(
 )
 async def get_all_tasks(
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
     current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):
@@ -40,7 +40,7 @@ async def get_all_tasks(
     return tags
 
 
-@router.get("/{tag_id}", response_model=TagResponse, summary="Получить тег по ID")
+@router.get("/{tag_id:int}", response_model=TagResponse, summary="Получить тег по ID")
 async def get_tag(
     tag_id: int,
     current_user: dict = Depends(get_current_user),
@@ -52,7 +52,7 @@ async def get_tag(
     return tag
 
 
-@router.patch("/{tag_id}", response_model=TagResponse, summary="Обновить тег")
+@router.patch("/{tag_id:int}", response_model=TagResponse, summary="Обновить тег")
 async def update_tag(
     tag_id: int,
     tag_data: TagUpdate,
@@ -68,7 +68,7 @@ async def update_tag(
 
 
 @router.delete(
-    "/{tag_id}", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить тег"
+    "/{tag_id:int}", status_code=status.HTTP_204_NO_CONTENT, summary="Удалить тег"
 )
 async def delete_tag(
     tag_id: int,
@@ -81,7 +81,7 @@ async def delete_tag(
 
 
 @router.get(
-    "/search", response_model=Sequence[TagResponse], summary="Поиск тегов по имени"
+    "/search/", response_model=Sequence[TagResponse], summary="Поиск тегов по имени"
 )
 async def search_tags(
     name: str,
@@ -93,7 +93,7 @@ async def search_tags(
 
 
 @router.get(
-    "/{tag_id}/tasks",
+    "/{tag_id:int}/tasks",
     response_model=Sequence[TaskResponse],
     summary="Получить все задачи по тегу",
 )
@@ -101,7 +101,7 @@ async def get_tasks_by_tag(
     tag_id: int,
     is_complited: bool | None = None,
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
     current_user: dict = Depends(get_current_user),
     session: AsyncSession = Depends(get_session),
 ):

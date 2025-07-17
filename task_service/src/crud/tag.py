@@ -1,5 +1,6 @@
-from typing import Sequence
+from typing import Optional, Sequence
 from fastapi import HTTPException
+from sqlalchemy import and_
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
 
@@ -8,7 +9,7 @@ from src.models.tag import Tag
 from src.models.task_tag import task_tag_table
 
 
-async def create_tag(session: AsyncSession, name: str, author_id: int) -> Tag:
+async def create_tag_db(session: AsyncSession, name: str, author_id: int) -> Tag:
     tag = Tag(name=name, author_id=author_id)
     session.add(tag)
     await session.commit()
@@ -20,15 +21,17 @@ async def get_all_tags_by_author_id(
     session: AsyncSession,
     author_id: int,
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
 ) -> Sequence[Tag]:
-    result = await session.execute(select(Tag).filter(Tag.author_id == author_id).offset(skip).limit(limit))
+    result = await session.execute(
+        select(Tag).filter(Tag.author_id == author_id).offset(skip).limit(limit)
+    )
     return result.scalars().all()
 
 
 async def get_tag_by_id(
     session: AsyncSession, tag_id: int, author_id: int
-) -> Tag | None:
+) -> Optional[Tag]:
     result = await session.execute(
         select(Tag).filter(Tag.id == tag_id, Tag.author_id == author_id)
     )
@@ -37,7 +40,7 @@ async def get_tag_by_id(
 
 async def update_tag_by_id(
     session: AsyncSession, tag_id: int, author_id: int, new_name: str
-) -> Tag | None:
+) -> Optional[Tag]:
     tag = await get_tag_by_id(session, tag_id, author_id)
     if tag:
         tag.name = new_name  # type: ignore
@@ -60,8 +63,7 @@ async def search_tags_by_name(
 ) -> Sequence[Tag]:
     result = await session.execute(
         select(Tag)
-        .where(Tag.author_id == author_id)
-        .where(Tag.name.ilike(f"%{name}%"))
+        .where(and_(Tag.author_id == author_id, Tag.name.ilike(f"%{name}%")))
         .limit(10)
     )
     return result.scalars().all()
@@ -73,11 +75,11 @@ async def get_tasks_for_tag(
     author_id: int,
     is_completed: bool | None = None,
     skip: int = 0,
-    limit: int = 20,
+    limit: int = 100,
 ) -> Sequence[Task]:
     tag = await get_tag_by_id(session, tag_id, author_id)
     if not tag:
-        raise HTTPException(status_code=404, detail="Tag not found")
+        return []
     query = (
         select(Task)
         .join(task_tag_table, Task.id == task_tag_table.c.task_id)

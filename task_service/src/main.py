@@ -4,5 +4,5 @@ from src.routers.tag import router as tag_router
 
 app = FastAPI(title="Task Service")
 
-app.include_router(task_router, prefix="/task", tags=["task"])
-app.include_router(tag_router, prefix="/tag", tags=["tag"])
+app.include_router(task_router, prefix="/tasks", tags=["tasks"])
+app.include_router(tag_router, prefix="/tags", tags=["tags"])
