@@ -4,7 +4,7 @@ from httpx import AsyncClient, ConnectError, ReadError, TimeoutException
 
 from src.core.config import AUTH_SERVICE_URL
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl=f"{AUTH_SERVICE_URL}/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="http://localhost:8000/auth/login") # нужно указывать localhost, что авторизация через Swager UI работала.
 
 async def get_current_user(token: str = Depends(oauth2_scheme)):
     async with AsyncClient() as client:
