@@ -19,8 +19,8 @@
 
 ## 🧰 Используемые технологии
 
-![Python](https://img.shields.io/badge/Python-3.12-blue?logo=python)
-![FastAPI](https://img.shields.io/badge/FastAPI-0.110.0-0e7c61?logo=fastapi)
+![Python](https://img.shields.io/badge/Python-3.11-blue?logo=python)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.116.1.0-0e7c61?logo=fastapi)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15-blue?logo=postgresql)
 ![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0-red?logo=python)
 ![Alembic](https://img.shields.io/badge/Alembic-Migrations-446e9b)
