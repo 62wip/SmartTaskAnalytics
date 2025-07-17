@@ -1,53 +1,93 @@
-version: '3.8'
+version: "3.9"
 
 services:
-  api-gateway:
-    build: ./api-gateway
+  postgres_auth:
+    image: postgres:15
+    container_name: postgres_auth
+    restart: always
+    environment:
+      POSTGRES_USER: auth_user
+      POSTGRES_PASSWORD: auth_password
+      POSTGRES_DB: auth_db
     ports:
-      - "8000:8000"
-    depends_on:
-      - auth-service
-      - task-service
-      - analytics-service
+      - "5434:5432"
+    volumes:
+      - postgres_auth_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
-  auth-service:
-    build: ./auth-service
-    environment:
-      - DATABASE_URL=postgresql://user:pass@auth-db/auth
-    depends_on:
-      - auth-db
-
-  auth-db:
+  postgres_task:
     image: postgres:15
+    container_name: postgres_task
+    restart: always
     environment:
-      POSTGRES_DB: auth
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+      POSTGRES_USER: task_user
+      POSTGRES_PASSWORD: task_password
+      POSTGRES_DB: task_db
+    ports:
+      - "5435:5432"
+    volumes:
+      - postgres_task_data:/var/lib/postgresql/data
+    networks:
+      - backend
 
-  task-service:
-    build: ./task-service
-    environment:
-      - DATABASE_URL=postgresql://user:pass@task-db/tasks
+  auth_service:
+    build:
+      context: ./auth_service
+    container_name: auth_service
+    restart: always
+    env_file:
+      - ./auth_service/src/.env
     depends_on:
-      - task-db
+      - postgres_auth
+    networks:
+      - backend
 
-  task-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: tasks
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
-
-  analytics-service:
-    build: ./analytics-service
-    environment:
-      - DATABASE_URL=postgresql://user:pass@analytics-db/analytics
+  task_service:
+    build:
+      context: ./task_service
+    container_name: task_service
+    restart: always
+    env_file:
+      - ./task_service/src/.env
     depends_on:
-      - analytics-db
+      - postgres_task
+      - auth_service
+    networks:
+      - backend
 
-  analytics-db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: analytics
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: pass
+  # analytics_service:
+  #   build:
+  #     context: ./analytics_service
+  #   container_name: analytics_service
+  #   restart: always
+  #   env_file:
+  #     - ./analytics_service/src/.env
+  #   depends_on:
+  #     - postgres
+  #     - task_service
+  #   networks:
+  #     - backend
+
+  # api_gateway:
+  #   build:
+  #     context: ./api_gateway
+  #   container_name: api_gateway
+  #   restart: always
+  #   ports:
+  #     - "8000:8000"
+  #   depends_on:
+  #     - auth_service
+  #     - task_service
+  #     # - analytics_service
+  #   networks:
+  #     - backend
+
+volumes:
+  postgres_auth_data:
+  postgres_task_data:
+  postgres_analytics_data:
+
+networks:
+  backend:
+    driver: bridge
